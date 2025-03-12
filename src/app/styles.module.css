@@ -1,0 +1,13 @@
+.headerText {
+    border-bottom: 0.005rem solid var(--mantine-color-gray-2);
+    border-bottom: 10px;
+  }
+  
+  .headerTextDark {
+    background-color: var(--mantine-color-dark-6);
+    border-bottom: 0.005rem solid var(--mantine-color-gray-8);
+  }
+  
+  .headerTextLight {
+    background-color: var(--mantine-color-gray-1);
+  }

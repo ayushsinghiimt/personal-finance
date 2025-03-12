@@ -1,4 +1,6 @@
+"use client";
 import ProtectedRoute from "../../components/ProtectedRoute";
+import { supabase } from "../../../superbaseClient";
 import {
   IconBulb,
   IconCheckbox,
@@ -27,15 +29,11 @@ const links = [
 ];
 
 const collections = [
-  { emoji: "👍", label: "Sales" },
-  { emoji: "🚚", label: "Deliveries" },
-  { emoji: "💸", label: "Discounts" },
-  { emoji: "💰", label: "Profits" },
-  { emoji: "✨", label: "Reports" },
-  { emoji: "🛒", label: "Orders" },
-  { emoji: "📅", label: "Events" },
-  { emoji: "🙈", label: "Debts" },
-  { emoji: "💁‍♀️", label: "Customers" },
+  { emoji: "💸", label: "Dashboard", redirect: "/dashboard" },
+  { emoji: "💸", label: "Transactions", redirect: "/dashboard/transactions" },
+  { emoji: "💰", label: "Assets & Liabilities", redirect: "/dashboard/assets" },
+
+  { emoji: "✨", label: "Net Worth", redirect: "/dashboard/net-worth" },
 ];
 
 export default function DashboardLayout({ children }) {
@@ -55,7 +53,7 @@ export default function DashboardLayout({ children }) {
 
   const collectionLinks = collections.map((collection) => (
     <a
-      href="#"
+      href={collection.redirect}
       // onClick={(event) => event.preventDefault()}
       key={collection.label}
       className={classes.collectionLink}
@@ -103,8 +101,16 @@ export default function DashboardLayout({ children }) {
               </Tooltip>
             </Group>
             <div className={classes.collections}>{collectionLinks}</div>
+            <h1
+              onClick={async () => {
+                await supabase.auth.signOut();
+              }}
+            >
+              Signout
+            </h1>
           </div>
         </nav>
+
         <div className={classes.content}>{children}</div>
       </div>
     </ProtectedRoute>

@@ -3,7 +3,8 @@ import CustomTable from "@/components/CustomTable";
 export default function TransactionsPage() {
   return (
     <div>
-      <CustomTable />
+      <h1>Transactions</h1>
+      {/* <CustomTable /> */}
     </div>
   );
 }

@@ -1,8 +1,5 @@
 "use client";
-export default function TransactionsPage() {
-  return (
-    <div>
-      <h1>Transactions</h1>
-    </div>
-  );
+import CustomTable from "@/components/CustomTable";
+export default function TransactionsPage({ children }) {
+  return <div>{children}</div>;
 }

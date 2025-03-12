@@ -16,6 +16,8 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Get initial session
+    if (!router) return;
+    if (!router.push) return;
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false); //
@@ -27,10 +29,16 @@ export const AuthProvider = ({ children }) => {
     } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setLoading(false);
+      console.log("event", event);
+      console.log("router", router);
 
-      if (event === "SIGNED_IN") {
-        router.push(router.asPath); // Redirect to dashboard on login
-      } else if (event === "SIGNED_OUT") {
+      // if (event === "SIGNED_IN") {
+      //   console.log("router", router);
+      //   console.log("router.asPath", router.asPath);
+      //   router.push(router.asPath); // Redirect to dashboard on login
+      // } else
+
+      if (event === "SIGNED_OUT") {
         router.push("/"); // Redirect to home on logout
       }
     });
