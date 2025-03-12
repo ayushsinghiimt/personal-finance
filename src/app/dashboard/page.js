@@ -2,6 +2,8 @@
 
 import { useAuth } from "../context/AuthProvider";
 import { supabase } from "../../../superbaseClient";
+import { StatsGridIcons } from "@/components/StatsCard";
+import ReactECharts from "echarts-for-react";
 
 export default function DashboardPage() {
   const { session } = useAuth();
@@ -10,20 +12,98 @@ export default function DashboardPage() {
     await supabase.auth.signOut();
   };
 
+  const data = [
+    { title: "Total Income", value: "$13,456", diff: 34 },
+    { title: "Total Expenses", value: "$4,145", diff: -13 },
+    { title: "Net Worth", value: "745", diff: 18 },
+  ];
+
+  const option = {
+    title: {
+      text: "Income vs Expenses (last 6 months)",
+    },
+    tooltip: {
+      trigger: "axis",
+    },
+    legend: {
+      data: ["Income", "Expenses"],
+    },
+    grid: {
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
+    },
+    toolbox: {
+      feature: {
+        saveAsImage: {},
+      },
+    },
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      data: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"],
+    },
+    yAxis: {
+      type: "value",
+    },
+
+    series: [
+      {
+        name: "Income",
+        type: "line",
+        stack: "Total",
+        data: [120, 132, 101, 134, 90, 230, 210],
+      },
+      {
+        name: "Expenses",
+        type: "line",
+        stack: "Total",
+        data: [220, 182, 191, 234, 290, 330, 310],
+      },
+    ],
+  };
+  const pieChart = {
+    title: {
+      text: "Referer of a Website",
+      subtext: "Fake Data",
+      left: "center",
+    },
+    tooltip: {
+      trigger: "item",
+    },
+    legend: {
+      orient: "vertical",
+      left: "left",
+    },
+    series: [
+      {
+        name: "Access From",
+        type: "pie",
+        radius: "50%",
+        data: [
+          { value: 1048, name: "Search Engine" },
+          { value: 735, name: "Direct" },
+          { value: 580, name: "Email" },
+          { value: 484, name: "Union Ads" },
+          { value: 300, name: "Video Ads" },
+        ],
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: "rgba(0, 0, 0, 0.5)",
+          },
+        },
+      },
+    ],
+  };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
-        <h1 className="text-2xl font-bold mb-4">
-          Welcome, {session?.user?.email}! 🚀
-        </h1>
-        <p>You are logged in!</p>
-        <button
-          onClick={handleSignOut}
-          className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-        >
-          Sign Out
-        </button>
-      </div>
-    </div>
+    <>
+      <StatsGridIcons data={data} />
+      <ReactECharts option={option} />
+
+      <ReactECharts option={pieChart} />
+    </>
   );
 }

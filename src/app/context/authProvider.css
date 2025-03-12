@@ -1,0 +1,30 @@
+/* Container styling */
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f3f4f6; /* bg-gray-100 */
+  }
+  
+  /* Login box styling */
+  .login-box {
+    background-color: #ffffff; /* bg-white */
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* shadow-lg */
+    width: 100%;
+    max-width: 400px; /* max-w-md */
+    box-sizing: border-box;
+  }
+  
+  /* Title styling */
+  .login-title {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #111827;
+  }
+  
+  /* Add any additional Supabase-specific styling here if needed */
+  
