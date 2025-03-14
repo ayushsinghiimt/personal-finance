@@ -6,6 +6,7 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useRouter } from "next/navigation";
 import "./authProvider.css";
+import { Skeleton } from "@mantine/core";
 
 const AuthContext = createContext();
 
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   if (loading) {
     return (
       <div className="loading-container">
-        <p>Loading...</p>
+        <Skeleton visible={loading}></Skeleton>
       </div>
     );
   }

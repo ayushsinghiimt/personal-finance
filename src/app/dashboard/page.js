@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthProvider";
 import { supabase } from "../../../superbaseClient";
 import { StatsGridIcons } from "@/components/StatsCard";
 import ReactECharts from "echarts-for-react";
+import { Box, Paper, Group, Title } from "@mantine/core";
+import classes from "./DashboardPage.module.css";
 
 export default function DashboardPage() {
   const { session } = useAuth();
@@ -19,9 +21,6 @@ export default function DashboardPage() {
   ];
 
   const option = {
-    title: {
-      text: "Income vs Expenses (last 6 months)",
-    },
     tooltip: {
       trigger: "axis",
     },
@@ -101,9 +100,43 @@ export default function DashboardPage() {
   return (
     <>
       <StatsGridIcons data={data} />
-      <ReactECharts option={option} />
+      <Box px="xs" my={"xs"} style={{ marginBottom: "80px" }}>
+        <Paper withBorder mb={"md"} radius={0}>
+          <Group
+            justify={"space-between"}
+            align={"center"}
+            className={classes.header}
+          >
+            <Title order={5} style={{ marginLeft: "12px", padding: "10px" }}>
+              Income vs Expenses (last 6 months)
+            </Title>
+          </Group>
+          <Box p={"20px"}>
+            <ReactECharts option={option} opts={{ renderer: "svg" }} />
+          </Box>
+        </Paper>
+      </Box>
 
-      <ReactECharts option={pieChart} />
+      <Box
+        px="xs"
+        my={"xs"}
+        style={{ marginBottom: "80px", marginTop: "60px" }}
+      >
+        <Paper withBorder mb={"md"} radius={0}>
+          <Group
+            justify={"space-between"}
+            align={"center"}
+            className={classes.header}
+          >
+            <Title order={5} style={{ marginLeft: "12px", padding: "10px" }}>
+              Expenses by Category
+            </Title>
+          </Group>
+          <Box p={"30px"}>
+            <ReactECharts option={pieChart} opts={{ renderer: "svg" }} />
+          </Box>
+        </Paper>
+      </Box>
     </>
   );
 }

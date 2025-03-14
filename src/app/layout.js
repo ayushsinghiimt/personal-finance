@@ -29,9 +29,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AuthProvider>
-          <MantineProvider theme={theme}>{children}</MantineProvider>
-        </AuthProvider>
+        <MantineProvider theme={theme}>
+          <AuthProvider>{children}</AuthProvider>
+        </MantineProvider>
       </body>
     </html>
   );
