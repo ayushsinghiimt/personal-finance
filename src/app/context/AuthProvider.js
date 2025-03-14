@@ -21,6 +21,9 @@ export const AuthProvider = ({ children }) => {
     if (!router.push) return;
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session?.access_token) {
+        localStorage.setItem("access_token", session.access_token);
+      }
       setLoading(false); //
     });
 

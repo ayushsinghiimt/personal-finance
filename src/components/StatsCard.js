@@ -3,6 +3,7 @@ import { Group, Paper, SimpleGrid, Text, ThemeIcon } from "@mantine/core";
 import classes from "./Stats.module.css";
 
 export function StatsGridIcons({ data }) {
+  if (!data) return null;
   const stats = data.map((stat) => {
     const DiffIcon = stat.diff > 0 ? IconArrowUpRight : IconArrowDownRight;
 
@@ -38,12 +39,14 @@ export function StatsGridIcons({ data }) {
             <DiffIcon size={28} stroke={1.5} />
           </ThemeIcon>
         </Group>
-        <Text c="dimmed" fz="sm" mt="md">
-          <Text component="span" c={stat.diff > 0 ? "teal" : "red"} fw={700}>
-            {stat.diff}%
-          </Text>{" "}
-          {stat.diff > 0 ? "increase" : "decrease"} compared to last month
-        </Text>
+        {stat.diff && (
+          <Text c="dimmed" fz="sm" mt="md">
+            <Text component="span" c={stat.diff > 0 ? "teal" : "red"} fw={700}>
+              {stat.diff}
+            </Text>{" "}
+            {stat.diff > 0 ? "increase" : "decrease"} compared to last month
+          </Text>
+        )}
       </Paper>
     );
   });

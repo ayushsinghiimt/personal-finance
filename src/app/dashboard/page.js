@@ -1,20 +1,64 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthProvider";
 import { supabase } from "../../../superbaseClient";
 import { StatsGridIcons } from "@/components/StatsCard";
 import ReactECharts from "echarts-for-react";
 import { Box, Paper, Group, Title } from "@mantine/core";
 import classes from "./DashboardPage.module.css";
+import useFinancialSummaryStore from "@/store/useFinancialSummary";
+import useIncomeEchart from "@/store/useIncomeEchart";
+import useCategoryExpenses from "@/store/useCategoryExpenses";
 
 export default function DashboardPage() {
-  const { session } = useAuth();
+  const { data, isLoading, error, fetchData } = useFinancialSummaryStore();
+  const {
+    data: lineChartData,
+    isLoading: isLoadingLineChart,
+    error: errorLineChart,
+    fetchData: fetchLineChart,
+  } = useIncomeEchart();
+  const {
+    data: expenseCategoryData,
+    isLoading: isLoadingPieChart,
+    error: isErrorPieChart,
+    fetchData: fetchPieChartData,
+  } = useCategoryExpenses();
+  const [summary, setSummary] = useState(null);
+  useEffect(() => {
+    const formatFinancialSummary = (data) => {
+      return [
+        {
+          title: "TOTAL INCOME",
+          value: data.totalIncome,
+          diff: data.performance?.incomeChange, // Include income change
+        },
+        {
+          title: "TOTAL EXPENSE",
+          value: data.totalExpense,
+          diff: data.performance?.expenseChange, // Include expense change
+        },
+        {
+          title: "NET WORTH",
+          value: data.netWorth,
+          diff: null, // No change value for net worth
+        },
+      ];
+    };
+    if (data) setSummary(formatFinancialSummary(data));
+  }, [data]);
 
+  console.log("data is ", expenseCategoryData);
+  useEffect(() => {
+    fetchData();
+    fetchLineChart();
+    fetchPieChartData();
+  }, []);
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };
 
-  const data = [
+  const data2 = [
     { title: "Total Income", value: "$13,456", diff: 34 },
     { title: "Total Expenses", value: "$4,145", diff: -13 },
     { title: "Net Worth", value: "745", diff: 18 },
@@ -99,7 +143,8 @@ export default function DashboardPage() {
   };
   return (
     <>
-      <StatsGridIcons data={data} />
+      {isLoading ? <div>Loading...</div> : <StatsGridIcons data={summary} />}
+
       <Box px="xs" my={"xs"} style={{ marginBottom: "80px" }}>
         <Paper withBorder mb={"md"} radius={0}>
           <Group
@@ -112,7 +157,11 @@ export default function DashboardPage() {
             </Title>
           </Group>
           <Box p={"20px"}>
-            <ReactECharts option={option} opts={{ renderer: "svg" }} />
+            {isLoadingLineChart ? (
+              <></>
+            ) : (
+              <ReactECharts option={lineChartData} opts={{ renderer: "svg" }} />
+            )}
           </Box>
         </Paper>
       </Box>
@@ -133,7 +182,14 @@ export default function DashboardPage() {
             </Title>
           </Group>
           <Box p={"30px"}>
-            <ReactECharts option={pieChart} opts={{ renderer: "svg" }} />
+            {isLoadingPieChart ? (
+              <div>Loading...</div>
+            ) : (
+              <ReactECharts
+                option={expenseCategoryData}
+                opts={{ renderer: "svg" }}
+              />
+            )}
           </Box>
         </Paper>
       </Box>
