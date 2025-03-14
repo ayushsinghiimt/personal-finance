@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Modal, Button, Select, NumberInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-const categories = Array.from(
-  { length: 20 },
-  (_, i) => `cat-${String(i + 1).padStart(3, "0")}`
-);
-
-export function AssetLiabilityCreator({ opened, setOpened }) {
+export function AssetLiabilityCreator({
+  opened,
+  setOpened,
+  handleCreateRow,
+  categories,
+}) {
   const form = useForm({
     initialValues: {
       name: "",
@@ -26,6 +26,7 @@ export function AssetLiabilityCreator({ opened, setOpened }) {
 
   const handleSubmit = (values) => {
     console.log("Form submitted:", values);
+    handleCreateRow(values);
     setOpened(false);
     form.reset();
   };
@@ -55,7 +56,7 @@ export function AssetLiabilityCreator({ opened, setOpened }) {
         <Select
           label="Type"
           placeholder="Select type"
-          data={["Asset", "Liability"]}
+          data={["ASSET", "LIABILITY"]}
           {...form.getInputProps("type")}
           required
           mb="sm"

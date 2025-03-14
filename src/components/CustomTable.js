@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import cx from "clsx";
 import { ScrollArea, Table, Group, Tooltip } from "@mantine/core";
+import useTransactionStore from "@/store/transactionStore/useTransaction";
 
 import {
   ActionIcon,
@@ -33,107 +34,12 @@ import { useForm } from "@mantine/form";
 
 import { DateTimePicker } from "@mantine/dates";
 
-let data = [
-  {
-    id: "1a2b3c4d-1234-5678-9abc-def123456789",
-    userId: "user-001",
-    categoryId: "cat-001",
-    amount: 25.5,
-    type: "Expense",
-    description: "Lunch at a cafe",
-    date: "2025-03-01T12:30:00Z",
-  },
-  {
-    id: "2b3c4d5e-2345-6789-abcd-ef1234567890",
-    userId: "user-001",
-    categoryId: "cat-002",
-    amount: 1500.0,
-    type: "Income",
-    description: "Monthly salary",
-    date: "2025-03-02T09:00:00Z",
-  },
-  {
-    id: "3c4d5e6f-3456-789a-bcde-f12345678901",
-    userId: "user-002",
-    categoryId: "cat-003",
-    amount: 50.0,
-    type: "Expense",
-    description: "Groceries",
-    date: "2025-03-03T15:45:00Z",
-  },
-  {
-    id: "4d5e6f7g-4567-89ab-cdef-123456789012",
-    userId: "user-002",
-    categoryId: "cat-004",
-    amount: 10.0,
-    type: "Expense",
-    description:
-      "Bus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fareBus fare ",
-    date: "2025-03-04T08:15:00Z",
-  },
-  {
-    id: "5e6f7g8h-5678-9abc-def1-234567890123",
-    userId: "user-003",
-    categoryId: "cat-005",
-    amount: 200.0,
-    type: "Income",
-    description: "Freelance project",
-    date: "2025-03-05T18:00:00Z",
-  },
-  {
-    id: "6f7g8h9i-6789-abcd-ef12-345678901234",
-    userId: "user-003",
-    categoryId: "cat-006",
-    amount: 30.0,
-    type: "Expense",
-    description: "Movie ticket",
-    date: "2025-03-06T20:00:00Z",
-  },
-  {
-    id: "7g8h9i0j-789a-bcde-f123-456789012345",
-    userId: "user-004",
-    categoryId: "cat-007",
-    amount: 500.0,
-    type: "Income",
-    description: "Bonus",
-    date: "2025-03-07T10:30:00Z",
-  },
-  {
-    id: "8h9i0j1k-89ab-cdef-1234-567890123456",
-    userId: "user-004",
-    categoryId: "cat-008",
-    amount: 15.75,
-    type: "Expense",
-    description: "Coffee",
-    date: "2025-03-08T14:20:00Z",
-  },
-  {
-    id: "9i0j1k2l-9abc-def1-2345-678901234567",
-    userId: "user-005",
-    categoryId: "cat-009",
-    amount: 100.0,
-    type: "Income",
-    description: "Gift",
-    date: "2025-03-09T16:00:00Z",
-  },
-  {
-    id: "0j1k2l3m-abc1-2345-6789-012345678901",
-    userId: "user-005",
-    categoryId: "cat-010",
-    amount: 40.0,
-    type: "Expense",
-    description: "Dinner with friends",
-    date: "2025-03-10T19:45:00Z",
-  },
-];
-
-data = [...data, ...data, ...data, ...data, ...data, ...data, ...data, ...data];
-const categories = Array.from(
-  { length: 20 },
-  (_, i) => `cat-${String(i + 1).padStart(3, "0")}`
-);
-
-export function TransactionCreator({ opened, setOpened }) {
+export function TransactionCreator({
+  opened,
+  setOpened,
+  createTransaction,
+  categories,
+}) {
   // Generate categories from 001-020
 
   const form = useForm({
@@ -156,7 +62,7 @@ export function TransactionCreator({ opened, setOpened }) {
   });
 
   const handleSubmit = (values) => {
-    console.log("Form submitted:", values);
+    createTransaction(values);
     setOpened(false);
     form.reset();
   };
@@ -180,7 +86,7 @@ export function TransactionCreator({ opened, setOpened }) {
           <Select
             label="Type"
             placeholder="Select type"
-            data={["Income", "Expense"]}
+            data={["INCOME", "EXPENSE"]}
             required
             {...form.getInputProps("type")}
             mb="sm"
@@ -221,7 +127,7 @@ export function TransactionCreator({ opened, setOpened }) {
   );
 }
 
-const TransactionRow = ({ row, categories, onSave, onDelete }) => {
+const TransactionRow = ({ row, categories, deleteTransaction }) => {
   const [editMode, setEditMode] = useState(false);
 
   const form = useForm({
@@ -239,7 +145,10 @@ const TransactionRow = ({ row, categories, onSave, onDelete }) => {
     },
   });
 
-  const handleSave = () => {
+  console.log("Row:", row);
+  console.log("Form:", form.values);
+
+  const handleSave = async () => {
     if (form.validate().hasErrors) return;
 
     const updatedData = {
@@ -249,8 +158,12 @@ const TransactionRow = ({ row, categories, onSave, onDelete }) => {
     };
 
     // Call API through parent component
-    onSave(updatedData);
+    await useTransactionStore.getState().updateTransaction(row.id, updatedData);
     setEditMode(false);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteTransaction(id);
   };
 
   return (
@@ -271,21 +184,22 @@ const TransactionRow = ({ row, categories, onSave, onDelete }) => {
             required
           />
         ) : (
-          row.categoryId
+          categories.find((category) => category.value === row.categoryId)
+            ?.label
         )}
       </Table.Td>
 
       <Table.Td>
         {editMode ? (
           <Select
-            data={["Income", "Expense"]}
+            data={["INCOME", "EXPENSE"]}
             {...form.getInputProps("type")}
             required
           />
         ) : (
           <Badge
             variant="light"
-            color={row.type === "Expense" ? "red" : "green"}
+            color={row.type === "EXPENSE" ? "red" : "green"}
           >
             {row.type}
           </Badge>
@@ -342,7 +256,7 @@ const TransactionRow = ({ row, categories, onSave, onDelete }) => {
           <ActionIcon
             variant="light"
             color="red"
-            onClick={() => onDelete(row.id)}
+            onClick={() => handleDelete(row.id)}
           >
             <IconTrash size="1rem" />
           </ActionIcon>
@@ -361,35 +275,59 @@ function CustomTable() {
   const [opened, setOpened] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [rowDisabled, setRowDisabled] = useState(true);
-  const handleSaveRow = async (updatedData) => {
-    // try {
-    //   const response = await fetch(`/api/transactions/${updatedData.id}`, {
-    //     method: 'PUT',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(updatedData)
-    //   });
-    //   if (!response.ok) throw new Error('Update failed');
-    //   // Update your local state here
-    // } catch (error) {
-    //   console.error('Update error:', error);
-    // }
+  const {
+    transactions,
+    isLoading,
+    error,
+    fetchTransactions,
+    deleteTransaction,
+    createTransaction,
+    isCategoriesLoading,
+    categories,
+    fetchTransactionCategories,
+  } = useTransactionStore();
+  console.log("Transactions:", transactions);
+  const [newTransaction, setNewTransaction] = useState({
+    categoryId: "",
+    amount: "",
+    type: "INCOME", // or "EXPENSE"
+    description: "",
+  });
+
+  useEffect(() => {
+    fetchTransactions();
+    fetchTransactionCategories();
+  }, []);
+
+  const handleCreate = async () => {
+    if (!newTransaction.amount || !newTransaction.categoryId) return;
+    await useTransactionStore.getState().createTransaction(newTransaction);
+    setNewTransaction({
+      categoryId: "",
+      amount: "",
+      type: "INCOME",
+      description: "",
+    });
   };
 
-  const handleDeleteRow = async (rowId) => {
-    // Similar API call for deletion
-  };
-  const rows = data.map((row) => (
+  const rows = transactions.map((row, index) => (
     <TransactionRow
+      key={index}
       row={row}
       categories={categories}
-      onSave={handleSaveRow}
-      onDelete={handleDeleteRow}
+      // onSave={handleUpdate}
+      deleteTransaction={deleteTransaction}
     />
   ));
 
   return (
     <Box px="xs" my={"xs"} style={{ marginBottom: "80px", marginTop: "60px" }}>
-      <TransactionCreator opened={opened} setOpened={setOpened} />
+      <TransactionCreator
+        opened={opened}
+        setOpened={setOpened}
+        createTransaction={createTransaction}
+        categories={categories}
+      />
       <Paper withBorder mb={"md"} radius={0}>
         <Group
           justify={"space-between"}
@@ -428,7 +366,7 @@ function CustomTable() {
                 <Table.Th>Action</Table.Th>
               </Table.Tr>
             </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
+            {isLoading ? <></> : <Table.Tbody>{rows}</Table.Tbody>}
           </Table>
         </ScrollArea>
       </Paper>

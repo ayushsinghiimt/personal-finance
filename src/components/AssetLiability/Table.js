@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   ScrollArea,
@@ -12,6 +12,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { AssetLiabilityCreator } from "./AssetLiabilityCreator";
 import { AssetLiabilityRow } from "./AssetLiabilityRow";
 import classes from "../customTable.module.css";
+import useAssetLiabilityStore from "@/store/assetLiabilityStore/useAssetLiability";
 let dummyData = [
   {
     id: "1",
@@ -50,17 +51,56 @@ dummyData = [
 
 const AssetLiabilityTable = () => {
   const [opened, setOpened] = useState(false);
-  const [data, setData] = useState(dummyData);
+  const [data, setData] = useState([]);
+  const {
+    assetsAndLiabilities,
+    categories,
+    fetchAssetsAndLiabilities,
+    fetchAssetLiabilityCategories,
+    createAssetOrLiability,
+    updateAssetOrLiability,
+    deleteAssetOrLiability,
+    isLoading,
+    error,
+  } = useAssetLiabilityStore();
 
-  const handleSaveRow = (updatedData) => {
-    setData((prevData) =>
-      prevData.map((item) => (item.id === updatedData.id ? updatedData : item))
-    );
+  useEffect(() => {
+    fetchAssetsAndLiabilities();
+    fetchAssetLiabilityCategories();
+  }, []);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleDeleteRow = (id) => {
-    setData((prevData) => prevData.filter((item) => item.id !== id));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.categoryId || !form.amount || !form.type || !form.description) {
+      alert("All fields are required");
+      return;
+    }
+    await createAssetOrLiability(form);
+    setForm({ categoryId: "", amount: "", type: "ASSET", description: "" });
   };
+
+  const handleSaveRow = async (id, data) => {
+    await updateAssetOrLiability(id, data);
+  };
+
+  const handleDeleteRow = async (id) => {
+    if (confirm("Are you sure you want to delete this?")) {
+      await deleteAssetOrLiability(id);
+    }
+  };
+
+  const handleCreateRow = async (data) => {
+    await createAssetOrLiability(data);
+  };
+
+  // const handleDeleteRow = (id) => {
+  //   setData((prevData) => prevData.filter((item) => item.id !== id));
+  // };
+  console.log("assetsAndLiabilities", assetsAndLiabilities);
 
   return (
     <>
@@ -69,7 +109,12 @@ const AssetLiabilityTable = () => {
         my={"xs"}
         style={{ marginBottom: "80px", marginTop: "60px" }}
       >
-        <AssetLiabilityCreator opened={opened} setOpened={setOpened} />
+        <AssetLiabilityCreator
+          opened={opened}
+          setOpened={setOpened}
+          handleCreateRow={handleCreateRow}
+          categories={categories}
+        />
         <Paper withBorder mb={"md"} radius={0}>
           <Group
             justify={"space-between"}
@@ -91,7 +136,7 @@ const AssetLiabilityTable = () => {
               padding: 20,
             }}
           >
-            <Table striped highlightOnHover withBorder>
+            <Table striped highlightOnHover>
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Name</Table.Th>
@@ -102,14 +147,31 @@ const AssetLiabilityTable = () => {
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {data.map((row) => (
-                  <AssetLiabilityRow
-                    key={row.id}
-                    row={row}
-                    onSave={handleSaveRow}
-                    onDelete={handleDeleteRow}
-                  />
-                ))}
+                {isLoading ? (
+                  <Table.Tr>
+                    <Table.Td colSpan={5}>Loading...</Table.Td>
+                  </Table.Tr>
+                ) : error ? (
+                  <Table.Tr>
+                    <Table.Td colSpan={5}>Error: {error}</Table.Td>
+                  </Table.Tr>
+                ) : assetsAndLiabilities.length === 0 ? (
+                  <Table.Tr>
+                    <Table.Td colSpan={5}>
+                      No assets or liabilities found
+                    </Table.Td>
+                  </Table.Tr>
+                ) : (
+                  assetsAndLiabilities.map((item, index) => (
+                    <AssetLiabilityRow
+                      key={index}
+                      data={item}
+                      onSave={handleSaveRow}
+                      onDelete={handleDeleteRow}
+                      categories={categories}
+                    />
+                  ))
+                )}
               </Table.Tbody>
             </Table>
           </ScrollArea>

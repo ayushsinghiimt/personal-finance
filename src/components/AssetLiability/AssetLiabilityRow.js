@@ -16,14 +16,10 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
-const categories = Array.from(
-  { length: 20 },
-  (_, i) => `cat-${String(i + 1).padStart(3, "0")}`
-);
-
-export function AssetLiabilityRow({ row, onSave, onDelete }) {
+export function AssetLiabilityRow({ data: row, onSave, onDelete, categories }) {
   const [editMode, setEditMode] = useState(false);
-
+  if (!row) return null;
+  console.log("row", row);
   const form = useForm({
     initialValues: {
       name: row.name,
@@ -38,11 +34,12 @@ export function AssetLiabilityRow({ row, onSave, onDelete }) {
     },
   });
 
+  console.log("form", form);
   const handleSave = () => {
     if (form.validate().hasErrors) return;
 
-    const updatedData = { id: row.id, ...form.values };
-    onSave(updatedData);
+    const updatedData = { ...form.values };
+    onSave(row.id, updatedData);
     setEditMode(false);
   };
 
@@ -55,17 +52,17 @@ export function AssetLiabilityRow({ row, onSave, onDelete }) {
         {editMode ? (
           <NumberInput {...form.getInputProps("value")} min={0} precision={2} />
         ) : (
-          `$${row.value.toFixed(2)}`
+          `${row.value}`
         )}
       </Table.Td>
       <Table.Td>
         {editMode ? (
           <Select
-            data={["Asset", "Liability"]}
+            data={["ASSET", "LIABILITY"]}
             {...form.getInputProps("type")}
           />
         ) : (
-          <Badge variant="light" color={row.type === "Asset" ? "green" : "red"}>
+          <Badge variant="light" color={row.type === "ASSET" ? "green" : "red"}>
             {row.type}
           </Badge>
         )}
@@ -74,7 +71,7 @@ export function AssetLiabilityRow({ row, onSave, onDelete }) {
         {editMode ? (
           <Select data={categories} {...form.getInputProps("categoryId")} />
         ) : (
-          row.categoryId
+          categories.find((cat) => cat.value === row.categoryId)?.label
         )}
       </Table.Td>
       <Table.Td>
