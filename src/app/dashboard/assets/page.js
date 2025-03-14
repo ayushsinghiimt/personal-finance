@@ -1,10 +1,10 @@
 "use client";
-import CustomTable from "@/components/CustomTable";
-export default function TransactionsPage() {
+import AssetLiabilityTable from "@/components/AssetLiability/Table";
+
+export default function AssetPage() {
   return (
-    <div>
-      <h1>Transactions</h1>
-      {/* <CustomTable /> */}
-    </div>
+    <>
+      <AssetLiabilityTable />
+    </>
   );
 }

@@ -18,47 +18,30 @@ import {
   TextInput,
   Tooltip,
   UnstyledButton,
+  Button,
+  Flex,
 } from "@mantine/core";
 import { UserButton } from "../../components/UserButton";
 import classes from "./dashboard.module.css";
 
-const links = [
-  { icon: IconBulb, label: "Activity", notifications: 3 },
-  { icon: IconCheckbox, label: "Tasks", notifications: 4 },
-  { icon: IconUser, label: "Contacts" },
-];
-
 const collections = [
-  { emoji: "💸", label: "Dashboard", redirect: "/dashboard" },
+  { emoji: "📊", label: "Dashboard", redirect: "/dashboard" },
   { emoji: "💸", label: "Transactions", redirect: "/dashboard/transactions" },
   { emoji: "💰", label: "Assets & Liabilities", redirect: "/dashboard/assets" },
 
-  { emoji: "✨", label: "Net Worth", redirect: "/dashboard/net-worth" },
+  { emoji: "🤑", label: "Net Worth", redirect: "/dashboard/net-worth" },
 ];
 
 export default function DashboardLayout({ children }) {
-  const mainLinks = links.map((link) => (
-    <UnstyledButton key={link.label} className={classes.mainLink}>
-      <div className={classes.mainLinkInner}>
-        <link.icon size={20} className={classes.mainLinkIcon} stroke={1.5} />
-        <span>{link.label}</span>
-      </div>
-      {link.notifications && (
-        <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
-          {link.notifications}
-        </Badge>
-      )}
-    </UnstyledButton>
-  ));
-
   const collectionLinks = collections.map((collection) => (
     <a
       href={collection.redirect}
       // onClick={(event) => event.preventDefault()}
       key={collection.label}
       className={classes.collectionLink}
+      style={{ marginTop: "10px" }}
     >
-      <Box component="span" mr={9} fz={16}>
+      <Box component="span" mr={9} fz={16} mt={10}>
         {collection.emoji}
       </Box>{" "}
       {collection.label}
@@ -68,47 +51,46 @@ export default function DashboardLayout({ children }) {
     <ProtectedRoute>
       <div className={classes.container}>
         <nav className={classes.navbar}>
-          <div className={classes.section}>
-            <UserButton />
-          </div>
+          <Flex justify={"flex-end"} direction={"column"}>
+            <div>
+              <div className={classes.section}>
+                <UserButton />
+              </div>
 
-          <TextInput
-            placeholder="Search"
-            size="xs"
-            leftSection={<IconSearch size={12} stroke={1.5} />}
-            rightSectionWidth={70}
-            rightSection={<Code className={classes.searchCode}>Ctrl + K</Code>}
-            styles={{ section: { pointerEvents: "none" } }}
-            mb="sm"
-          />
+              <TextInput
+                placeholder="Search"
+                size="xs"
+                leftSection={<IconSearch size={12} stroke={1.5} />}
+                rightSectionWidth={70}
+                rightSection={
+                  <Code className={classes.searchCode}>Ctrl + K</Code>
+                }
+                styles={{ section: { pointerEvents: "none" } }}
+                mb="sm"
+              />
 
-          <div className={classes.section}>
-            <div className={classes.mainLinks}>{mainLinks}</div>
-          </div>
+              <div className={classes.section}>
+                <Group
+                  className={classes.collectionsHeader}
+                  justify="space-between"
+                >
+                  <Text size="xs" fw={500} c="dimmed">
+                    Collections
+                  </Text>
+                </Group>
+                <div className={classes.collections}>{collectionLinks}</div>
+              </div>
+            </div>
 
-          <div className={classes.section}>
-            <Group
-              className={classes.collectionsHeader}
-              justify="space-between"
-            >
-              <Text size="xs" fw={500} c="dimmed">
-                Collections
-              </Text>
-              <Tooltip label="Create collection" withArrow position="right">
-                <ActionIcon variant="default" size={18}>
-                  <IconPlus size={12} stroke={1.5} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
-            <div className={classes.collections}>{collectionLinks}</div>
-            <h1
+            <Button
+              variant="light"
               onClick={async () => {
                 await supabase.auth.signOut();
               }}
             >
               Signout
-            </h1>
-          </div>
+            </Button>
+          </Flex>
         </nav>
 
         <div className={classes.content}>{children}</div>

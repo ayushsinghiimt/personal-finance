@@ -221,122 +221,130 @@ export function TransactionCreator({ opened, setOpened }) {
   );
 }
 
-const TransactionRow = ({ row, key }) => {
-  const [rowDisabled, setRowDisabled] = useState(true);
+const TransactionRow = ({ row, categories, onSave, onDelete }) => {
+  const [editMode, setEditMode] = useState(false);
+
+  const form = useForm({
+    initialValues: {
+      date: new Date(row.date),
+      type: row.type,
+      categoryId: row.categoryId,
+      amount: row.amount,
+      description: row.description,
+    },
+
+    validate: {
+      amount: (value) => (value > 0 ? null : "Invalid amount"),
+      description: (value) => (value.trim().length > 0 ? null : "Required"),
+    },
+  });
+
+  const handleSave = () => {
+    if (form.validate().hasErrors) return;
+
+    const updatedData = {
+      id: row.id,
+      ...form.values,
+      date: form.values.date.toISOString(),
+    };
+
+    // Call API through parent component
+    onSave(updatedData);
+    setEditMode(false);
+  };
+
   return (
-    <Table.Tr key={key} className="equal-width">
+    <Table.Tr className="equal-width">
       <Table.Td style={{ width: "25%" }}>
-        {rowDisabled ? (
+        {editMode ? (
+          <DateTimePicker {...form.getInputProps("date")} required mb="sm" />
+        ) : (
           ConvertUtcToLocal(row.date)
-        ) : (
-          <DateTimePicker
-            required
-            value={new Date(row.date)}
-            // {...form.getInputProps("date")}
-            mb="sm"
-          />
         )}
       </Table.Td>
+
       <Table.Td>
-        {rowDisabled ? (
-          row.categoryId
-        ) : (
+        {editMode ? (
           <Select
-            // label="Type"
-            placeholder="Select type"
             data={categories}
+            {...form.getInputProps("categoryId")}
             required
-            value={row.categoryId}
-            // {...form.getInputProps("type")}
-            mb="sm"
           />
+        ) : (
+          row.categoryId
         )}
       </Table.Td>
+
       <Table.Td>
-        {rowDisabled ? (
+        {editMode ? (
+          <Select
+            data={["Income", "Expense"]}
+            {...form.getInputProps("type")}
+            required
+          />
+        ) : (
           <Badge
             variant="light"
-            color={row.type == "Expense" ? "red" : "green"}
+            color={row.type === "Expense" ? "red" : "green"}
           >
             {row.type}
           </Badge>
-        ) : (
-          <Select
-            // label="Type"
-            placeholder="Select type"
-            data={["Income", "Expense"]}
-            required
-            value={row.type}
-            // {...form.getInputProps("type")}
-            mb="sm"
-          />
         )}
       </Table.Td>
+
       <Table.Td>
-        {rowDisabled ? (
-          row.amount
-        ) : (
+        {editMode ? (
           <NumberInput
-            required
+            {...form.getInputProps("amount")}
             min={0}
             precision={0}
-            value={row.amount}
-            parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-            // {...form.getInputProps("amount")}
-            mb="sm"
+            required
           />
-        )}
-      </Table.Td>
-      <Table.Td style={{ width: "25%" }}>
-        {rowDisabled ? (
-          row.description
         ) : (
-          <TextInput required value={row.description} mb="md" />
+          row.amount
         )}
       </Table.Td>
+
+      <Table.Td style={{ width: "25%" }}>
+        {editMode ? (
+          <TextInput {...form.getInputProps("description")} required />
+        ) : (
+          row.description
+        )}
+      </Table.Td>
+
       <Table.Td>
-        <Group spacing={"xs"} noWrap>
-          {rowDisabled ? (
+        <Group gap="xs" wrap="nowrap">
+          {editMode ? (
             <>
-              <Tooltip label="Edit" withArrow position="left">
-                <ActionIcon
-                  variant="light"
-                  color="gray"
-                  onClick={() => setRowDisabled(!rowDisabled)}
-                >
-                  <IconEdit size={"1rem"} />
-                </ActionIcon>
-              </Tooltip>
+              <ActionIcon
+                color="gray"
+                variant="light"
+                onClick={() => setEditMode(false)}
+              >
+                <IconArrowBackUp size="1rem" />
+              </ActionIcon>
+
+              <ActionIcon color="teal" variant="light" onClick={handleSave}>
+                <IconDeviceFloppy size="1rem" />
+              </ActionIcon>
             </>
           ) : (
             <ActionIcon
-              color="gray"
               variant="light"
-              onClick={() => setRowDisabled(!rowDisabled)}
+              color="gray"
+              onClick={() => setEditMode(true)}
             >
-              <IconArrowBackUp size={"1rem"} />
+              <IconEdit size="1rem" />
             </ActionIcon>
           )}
-          {!rowDisabled && (
-            <Tooltip label="Save" withArrow position="left">
-              <ActionIcon
-                color="teal"
-                variant="light"
-                onClick={() => {
-                  setRowDisabled(!rowDisabled);
-                  onSave();
-                }}
-              >
-                <IconDeviceFloppy size={"1rem"} />
-              </ActionIcon>
-            </Tooltip>
-          )}
+
           <ActionIcon
             variant="light"
-            color="gray"
-            onClick={() => setRowDisabled(!rowDisabled)}
+            color="red"
+            onClick={() => onDelete(row.id)}
           >
-            <IconTrash color="red" size={"1rem"} />
+            <IconTrash size="1rem" />
           </ActionIcon>
         </Group>
       </Table.Td>
@@ -353,8 +361,31 @@ function CustomTable() {
   const [opened, setOpened] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [rowDisabled, setRowDisabled] = useState(true);
+  const handleSaveRow = async (updatedData) => {
+    // try {
+    //   const response = await fetch(`/api/transactions/${updatedData.id}`, {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(updatedData)
+    //   });
+    //   if (!response.ok) throw new Error('Update failed');
+    //   // Update your local state here
+    // } catch (error) {
+    //   console.error('Update error:', error);
+    // }
+  };
 
-  const rows = data.map((row) => <TransactionRow row={row} key={row.id} />);
+  const handleDeleteRow = async (rowId) => {
+    // Similar API call for deletion
+  };
+  const rows = data.map((row) => (
+    <TransactionRow
+      row={row}
+      categories={categories}
+      onSave={handleSaveRow}
+      onDelete={handleDeleteRow}
+    />
+  ));
 
   return (
     <Box px="xs" my={"xs"} style={{ marginBottom: "80px", marginTop: "60px" }}>
