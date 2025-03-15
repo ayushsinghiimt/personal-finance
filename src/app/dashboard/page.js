@@ -9,9 +9,11 @@ import classes from "./DashboardPage.module.css";
 import useFinancialSummaryStore from "@/store/useFinancialSummary";
 import useIncomeEchart from "@/store/useIncomeEchart";
 import useCategoryExpenses from "@/store/useCategoryExpenses";
+import { getUserData } from "@/utils";
 
 export default function DashboardPage() {
   const { data, isLoading, error, fetchData } = useFinancialSummaryStore();
+
   const {
     data: lineChartData,
     isLoading: isLoadingLineChart,

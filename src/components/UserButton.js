@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconChevronRight } from "@tabler/icons-react";
 import {
   Avatar,
@@ -13,25 +13,45 @@ import {
 } from "@mantine/core";
 import classes from "./UserButton.module.css";
 import { useForm } from "@mantine/form";
+import userStore from "@/store/userStore/userStore";
 
 function EditUserModal({ opened, setOpened }) {
+  const { user, updateUser } = userStore();
   // Form setup using Mantine's useForm hook
   const form = useForm({
     initialValues: {
-      fullName: "",
-      gender: "",
-      mobileNumber: "",
+      firstName: user?.firstName || null,
+      lastName: user?.lastName || null,
+      gender: user?.gender || null,
+      mobileNo: user?.mobileNo || null,
+      currency: user?.currency || null,
     },
     validate: {
       fullName: (value) => (value ? null : "Full name is required"),
-      gender: (value) => (value ? null : "Gender is required"),
-      mobileNumber: (value) =>
-        /^\d{10}$/.test(value) ? null : "Mobile number must be 10 digits",
     },
   });
 
-  const handleSubmit = (values) => {
-    console.log("Updated user details:", values);
+  useEffect(() => {
+    form.setValues({
+      firstName: user?.firstName || null,
+      lastName: user?.lastName || null,
+      gender: user?.gender || null,
+      mobileNo: user?.mobileNo || null,
+      currency: user?.currency || null,
+    });
+  }, [user]);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("access_token");
+
+  // });
+
+  const handleSubmit = () => {
+    console.log("Updated user details:", form.values);
+    const payload = Object.fromEntries(
+      Object.entries(form.values).filter(([_, value]) => value !== null)
+    );
+    updateUser(user.id, payload);
     setOpened(false); // Close modal after submission
   };
 
@@ -43,50 +63,61 @@ function EditUserModal({ opened, setOpened }) {
         title="Edit User Details"
         overlayProps={{ blur: 2 }}
       >
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          {/* Full Name Input */}
-          <TextInput
-            label="Full Name"
-            placeholder="Enter full name"
-            {...form.getInputProps("fullName")}
-            required
-          />
+        <TextInput
+          label="First Name"
+          placeholder="Enter First name"
+          {...form.getInputProps("firstName")}
+          required
+        />
+        <TextInput
+          label="Last Name"
+          placeholder="Enter Last name"
+          {...form.getInputProps("lastName")}
+          mt="md"
+        />
 
-          {/* Gender Select */}
-          <Select
-            label="Gender"
-            placeholder="Select gender"
-            data={[
-              { value: "male", label: "Male" },
-              { value: "female", label: "Female" },
-              { value: "other", label: "Other" },
-            ]}
-            {...form.getInputProps("gender")}
-            required
-            mt="md"
-          />
+        <Select
+          label="Currency"
+          placeholder="Select Currency"
+          defaultValue="RUPEE"
+          data={[
+            { value: "RUPEE", label: "₹" },
+            { value: "DOLLAR", label: "$" },
+          ]}
+          {...form.getInputProps("currency")}
+          mt="md"
+        />
 
-          {/* Mobile Number Input */}
-          <TextInput
-            label="Mobile Number"
-            placeholder="Enter mobile number"
-            {...form.getInputProps("mobileNumber")}
-            required
-            mt="md"
-          />
+        <Select
+          label="Gender"
+          placeholder="Select gender"
+          data={[
+            { value: "MALE", label: "Male" },
+            { value: "FEMALE", label: "Female" },
+            { value: "OTHER", label: "Other" },
+          ]}
+          {...form.getInputProps("gender")}
+          mt="md"
+        />
 
-          {/* Submit Button */}
-          <Button type="submit" mt="xl" fullWidth>
-            Save Changes
-          </Button>
-        </form>
+        {/* Mobile Number Input */}
+        <TextInput
+          label="Mobile Number"
+          placeholder="Enter mobile number"
+          {...form.getInputProps("mobileNo")}
+          mt="md"
+        />
+
+        {/* Submit Button */}
+        <Button type="submit" mt="xl" fullWidth onClick={handleSubmit}>
+          Save Changes
+        </Button>
       </Modal>
     </>
   );
 }
 
-export function UserButton() {
-  const [opened, setOpened] = useState(false);
+export function UserButton({ opened, setOpened }) {
   return (
     <>
       <UnstyledButton className={classes.user}>

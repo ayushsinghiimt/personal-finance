@@ -3,6 +3,7 @@ import "./globals.css";
 import "./styles.module.css";
 
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 
 import { createTheme, MantineProvider } from "@mantine/core";
 import { AuthProvider } from "./context/AuthProvider";

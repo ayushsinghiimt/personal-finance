@@ -1,4 +1,5 @@
 "use client";
+
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { supabase } from "../../../superbaseClient";
 import {
@@ -23,16 +24,29 @@ import {
 } from "@mantine/core";
 import { UserButton } from "../../components/UserButton";
 import classes from "./dashboard.module.css";
+import { getUserData } from "@/utils";
+import userStore from "@/store/userStore/userStore";
+import { useEffect, useState } from "react";
 
 const collections = [
   { emoji: "📊", label: "Dashboard", redirect: "/dashboard" },
   { emoji: "💸", label: "Transactions", redirect: "/dashboard/transactions" },
   { emoji: "💰", label: "Assets & Liabilities", redirect: "/dashboard/assets" },
-
-  { emoji: "🤑", label: "Net Worth", redirect: "/dashboard/net-worth" },
 ];
 
 export default function DashboardLayout({ children }) {
+  const { user, getUser, createUser } = userStore();
+  const [opened, setOpened] = useState(false);
+  useEffect(() => {
+    console.log("Getting user data");
+    const email = getUserData().email;
+    console.log("Email is ", email);
+    console.log(getUser);
+    if (!user) getUser(email);
+    if (user && user.firstName === null) {
+      setOpened(true);
+    }
+  }, [getUser, user]);
   const collectionLinks = collections.map((collection) => (
     <a
       href={collection.redirect}
@@ -54,7 +68,7 @@ export default function DashboardLayout({ children }) {
           <Flex justify={"flex-end"} direction={"column"}>
             <div>
               <div className={classes.section}>
-                <UserButton />
+                <UserButton opened={opened} setOpened={setOpened} />
               </div>
 
               <TextInput
