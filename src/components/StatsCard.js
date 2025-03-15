@@ -10,9 +10,6 @@ export function StatsGridIcons({ data }) {
     if (stat.title == "NET WORTH") {
       DiffIcon = IconArrowUpRight;
     }
-    if (stat.title == "TOTAL EXPENSE") {
-      DiffIcon = stat.value > 0 ? IconArrowDownRight : IconArrowUpRight;
-    }
 
     return (
       <Paper withBorder p="md" radius="md" key={stat.title}>

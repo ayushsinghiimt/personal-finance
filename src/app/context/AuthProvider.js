@@ -60,9 +60,11 @@ export const AuthProvider = ({ children }) => {
       </div>
     );
   }
+  console.log("window", `${window.location.origin}${router.asPath}`);
 
   if (!session) {
     // If no session, show login form
+
     return (
       <div className="container">
         <div className="login-box">
