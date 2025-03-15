@@ -369,7 +369,15 @@ function CustomTable() {
                 <Table.Th>Action</Table.Th>
               </Table.Tr>
             </Table.Thead>
-            {isLoading ? <></> : <Table.Tbody>{rows}</Table.Tbody>}
+            {isLoading ? (
+              <>Loading...</>
+            ) : transactions.length === 0 ? (
+              <Box p="10">
+                No Transaction found, click "Add Transaction" to create!
+              </Box>
+            ) : (
+              <Table.Tbody>{rows}</Table.Tbody>
+            )}
           </Table>
         </ScrollArea>
       </Paper>
