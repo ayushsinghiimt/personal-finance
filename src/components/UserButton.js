@@ -118,6 +118,20 @@ function EditUserModal({ opened, setOpened }) {
 }
 
 export function UserButton({ opened, setOpened }) {
+  const { user } = userStore();
+  const getFullName = (user) => {
+    const firstName = user?.firstName?.trim();
+    const lastName = user?.lastName?.trim();
+
+    if (!firstName && !lastName) return "Unknown";
+
+    return `${firstName || ""} ${lastName || ""}`.trim();
+  };
+  const getEmail = (user) => {
+    const email = user?.email?.trim();
+
+    return email || "Unknown";
+  };
   return (
     <>
       <UnstyledButton className={classes.user}>
@@ -129,11 +143,11 @@ export function UserButton({ opened, setOpened }) {
 
           <div style={{ flex: 1 }}>
             <Text size="sm" fw={500}>
-              Harriette Spoonlicker
+              {getFullName(user)}
             </Text>
 
             <Text c="dimmed" size="xs">
-              hspoonlicker@outlook.com
+              {getEmail(user)}
             </Text>
           </div>
         </Group>

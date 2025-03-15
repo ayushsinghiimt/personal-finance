@@ -164,7 +164,9 @@ const TransactionRow = ({ row, categories, deleteTransaction }) => {
   };
 
   const handleDelete = async (id) => {
-    await deleteTransaction(id);
+    if (confirm("Are you sure you want to delete this?")) {
+      await deleteTransaction(id);
+    }
   };
 
   return (
