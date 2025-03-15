@@ -19,7 +19,7 @@ import {
 export function AssetLiabilityRow({ data: row, onSave, onDelete, categories }) {
   const [editMode, setEditMode] = useState(false);
   if (!row) return null;
-  console.log("row", row);
+
   const form = useForm({
     initialValues: {
       name: row.name,
@@ -34,7 +34,6 @@ export function AssetLiabilityRow({ data: row, onSave, onDelete, categories }) {
     },
   });
 
-  console.log("form", form);
   const handleSave = () => {
     if (form.validate().hasErrors) return;
 

@@ -145,12 +145,8 @@ const TransactionRow = ({ row, categories, deleteTransaction }) => {
     },
   });
 
-  console.log("Row:", row);
-  console.log("Form:", form.values);
-
   const handleSave = async () => {
     if (form.validate().hasErrors) return;
-    console.log("Form values:", form.values);
 
     const updatedData = {
       id: row.id,
@@ -289,7 +285,7 @@ function CustomTable() {
     categories,
     fetchTransactionCategories,
   } = useTransactionStore();
-  console.log("Transactions:", transactions);
+
   const [newTransaction, setNewTransaction] = useState({
     categoryId: "",
     amount: "",

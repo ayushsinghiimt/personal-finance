@@ -100,7 +100,6 @@ const AssetLiabilityTable = () => {
   // const handleDeleteRow = (id) => {
   //   setData((prevData) => prevData.filter((item) => item.id !== id));
   // };
-  console.log("assetsAndLiabilities", assetsAndLiabilities);
 
   return (
     <>

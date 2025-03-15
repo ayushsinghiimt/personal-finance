@@ -47,7 +47,6 @@ function EditUserModal({ opened, setOpened }) {
   // });
 
   const handleSubmit = () => {
-    console.log("Updated user details:", form.values);
     const payload = Object.fromEntries(
       Object.entries(form.values).filter(([_, value]) => value !== null)
     );

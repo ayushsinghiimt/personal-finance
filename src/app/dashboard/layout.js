@@ -38,10 +38,8 @@ export default function DashboardLayout({ children }) {
   const { user, getUser, createUser } = userStore();
   const [opened, setOpened] = useState(false);
   useEffect(() => {
-    console.log("Getting user data");
     const email = getUserData().email;
-    console.log("Email is ", email);
-    console.log(getUser);
+
     if (!user) getUser(email);
     if (user && user.firstName === null) {
       setOpened(true);
@@ -99,6 +97,10 @@ export default function DashboardLayout({ children }) {
             <Button
               variant="light"
               onClick={async () => {
+                ["user_email", "user_id", "access_token"].forEach((key) =>
+                  localStorage.removeItem(key)
+                );
+
                 await supabase.auth.signOut();
               }}
             >

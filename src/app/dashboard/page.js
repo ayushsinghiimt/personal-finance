@@ -50,7 +50,6 @@ export default function DashboardPage() {
     if (data) setSummary(formatFinancialSummary(data));
   }, [data]);
 
-  console.log("data is ", expenseCategoryData);
   useEffect(() => {
     fetchData();
     fetchLineChart();

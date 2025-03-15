@@ -25,7 +25,6 @@ export function AssetLiabilityCreator({
   });
 
   const handleSubmit = (values) => {
-    console.log("Form submitted:", values);
     handleCreateRow(values);
     setOpened(false);
     form.reset();

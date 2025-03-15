@@ -13,7 +13,7 @@ export function StatsGridIcons({ data }) {
     if (stat.title == "TOTAL EXPENSE") {
       DiffIcon = stat.value > 0 ? IconArrowDownRight : IconArrowUpRight;
     }
-    console.log("stat", stat);
+
     return (
       <Paper withBorder p="md" radius="md" key={stat.title}>
         <Group justify="apart">
