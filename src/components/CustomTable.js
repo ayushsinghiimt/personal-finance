@@ -79,7 +79,7 @@ export function TransactionCreator({
           <DateTimePicker
             label="Date"
             required
-            // {...form.getInputProps("date")}
+            {...form.getInputProps("date")}
             mb="sm"
           />
 
@@ -150,6 +150,7 @@ const TransactionRow = ({ row, categories, deleteTransaction }) => {
 
   const handleSave = async () => {
     if (form.validate().hasErrors) return;
+    console.log("Form values:", form.values);
 
     const updatedData = {
       id: row.id,
