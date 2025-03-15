@@ -14,7 +14,6 @@ const useUserStore = create((set) => ({
   createUser: async (userData) => {
     set({ loading: true, error: null });
     try {
-      console.log("User data:", userData);
       const response = await axios.post(`${API_BASE_URL}/user`, userData, {
         headers: {
           Authorization: `Bearer ${getAccessToken()}`, // Attach token
@@ -50,20 +49,17 @@ const useUserStore = create((set) => ({
 
   // Get user by email
   getUser: async (email) => {
-    console.log("Getting user with email ", email);
     set({ loading: true, error: null });
     try {
-      console.log(API_BASE_URL);
       const response = await axios.get(`${API_BASE_URL}/user/${email}`, {
         headers: {
           Authorization: `Bearer ${getAccessToken()}`, // Attach token
         },
       });
-      console.log("response data:", response.data);
+
       set({ user: response.data, loading: false });
       return response.data;
     } catch (error) {
-      console.log("Error fetching user:", error);
       set({
         error: error.response?.data?.error || "Failed to fetch user",
         loading: false,
