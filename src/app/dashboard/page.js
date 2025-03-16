@@ -54,7 +54,7 @@ export default function DashboardPage() {
     fetchData();
     fetchLineChart();
     fetchPieChartData();
-  }, []);
+  }, [fetchData, fetchLineChart, fetchPieChartData]);
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };

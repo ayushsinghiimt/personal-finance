@@ -296,7 +296,7 @@ function CustomTable() {
   useEffect(() => {
     fetchTransactions();
     fetchTransactionCategories();
-  }, []);
+  }, [fetchTransactions, fetchTransactionCategories]);
 
   const handleCreate = async () => {
     if (!newTransaction.amount || !newTransaction.categoryId) return;
@@ -369,7 +369,8 @@ function CustomTable() {
               <>Loading...</>
             ) : transactions.length === 0 ? (
               <Box p="10">
-                No Transaction found, click "Add Transaction" to create!
+                No Transaction found, click &quot;Add Transaction&quot; to
+                create!
               </Box>
             ) : (
               <Table.Tbody>{rows}</Table.Tbody>

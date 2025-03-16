@@ -67,7 +67,7 @@ const AssetLiabilityTable = () => {
   useEffect(() => {
     fetchAssetsAndLiabilities();
     fetchAssetLiabilityCategories();
-  }, []);
+  }, [fetchAssetLiabilityCategories, fetchAssetsAndLiabilities]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

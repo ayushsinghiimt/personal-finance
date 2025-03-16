@@ -18,7 +18,6 @@ import {
 
 export function AssetLiabilityRow({ data: row, onSave, onDelete, categories }) {
   const [editMode, setEditMode] = useState(false);
-  if (!row) return null;
 
   const form = useForm({
     initialValues: {
