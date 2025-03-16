@@ -74,6 +74,11 @@ export const AuthProvider = ({ children }) => {
             appearance={{ theme: ThemeSupa }}
             providers={["google"]}
             redirectTo={`${window.location.origin}${router.asPath}`}
+            options={{
+              queryParams: {
+                prompt: "select_account", // Force showing Google account chooser
+              },
+            }}
           />
         </div>
       </div>
