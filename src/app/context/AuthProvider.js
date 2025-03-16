@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
             supabaseClient={supabase}
             appearance={{ theme: ThemeSupa }}
             providers={["google"]}
-            redirectTo={`${window.location.origin}${router.asPath}`}
+            redirectTo={`${window.location.origin}`}
             options={{
               queryParams: {
                 prompt: "select_account", // Force showing Google account chooser
