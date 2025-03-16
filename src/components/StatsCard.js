@@ -12,7 +12,13 @@ export function StatsGridIcons({ data }) {
     }
 
     return (
-      <Paper withBorder p="md" radius="md" key={stat.title}>
+      <Paper
+        withBorder
+        p="md"
+        radius="md"
+        key={stat.title}
+        style={{ paddingTop: "10px" }}
+      >
         <Group justify="apart">
           <div>
             <Text
