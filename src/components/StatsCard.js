@@ -1,8 +1,16 @@
 import { IconArrowDownRight, IconArrowUpRight } from "@tabler/icons-react";
 import { Group, Paper, SimpleGrid, Text, ThemeIcon } from "@mantine/core";
 import classes from "./Stats.module.css";
+import useUserStore from "@/store/userStore/userStore";
 
 export function StatsGridIcons({ data }) {
+  const { user } = useUserStore();
+  let currency;
+  if (user && user.currency) {
+    if (user.currency === "RUPEE") currency = "₹";
+    else currency = "$";
+  }
+
   if (!data) return null;
   const stats = data.map((stat) => {
     if (stat.diff) stat.diff = parseInt(stat.diff);
@@ -31,7 +39,9 @@ export function StatsGridIcons({ data }) {
               {stat.title}
             </Text>
             <Text fw={700} fz="xl">
-              {stat.value.toFixed(2)}
+              {stat.value != null
+                ? Number(stat.value).toFixed(2) + ` ${currency}`
+                : "N/A"}
             </Text>
           </div>
           <ThemeIcon
