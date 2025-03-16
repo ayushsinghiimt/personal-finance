@@ -31,7 +31,7 @@ export function StatsGridIcons({ data }) {
               {stat.title}
             </Text>
             <Text fw={700} fz="xl">
-              {stat.value}
+              {stat.value.toFixed(2)}
             </Text>
           </div>
           <ThemeIcon
