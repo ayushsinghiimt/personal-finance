@@ -1,3 +1,23 @@
+## **Tech Stack**
+
+### **1. Frontend**
+
+- **Next.js** – Hosted on **Vercel**
+- **UI Library** – [Mantine](https://mantine.dev/) and **Tailwind CSS**
+- **Charting** – [Apache ECharts](https://echarts.apache.org/)
+
+### **2. Backend**
+
+- **Node.js** – Hosted on **Render**
+
+### **3. Database**
+
+- **PostgreSQL** – Hosted on **Supabase**
+
+### **4. Authentication**
+
+- **Supabase** – Integrated with **Google Auth**
+
 ### Features Implemented
 
 1. **Stat Card Summary:** Displays key financial metrics like total income, total expenses, and net worth with percentage changes compared to the previous month.
