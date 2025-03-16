@@ -16,39 +16,49 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Get initial session
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      console.log("session", session);
+    const fetchSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (session) {
-        const user = session.user; // Extract the user object from the session
-
-        if (user) {
-          // Store user ID and email in localStorage
-
-          localStorage.setItem("user_id", user.id);
-          localStorage.setItem("user_email", user.email);
-        }
+        setSession(session);
+        storeSessionInLocalStorage(session);
       }
-      if (session?.access_token) {
+      setLoading(false);
+    };
+
+    const storeSessionInLocalStorage = (session) => {
+      const user = session.user;
+      if (user) {
+        localStorage.setItem("user_id", user.id);
+        localStorage.setItem("user_email", user.email);
+      }
+      if (session.access_token) {
         localStorage.setItem("access_token", session.access_token);
       }
-      setLoading(false); //
-    });
+    };
+
+    // Fetch initial session
+    fetchSession();
 
     // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setLoading(false);
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("Auth state changed:", event, session);
+        setSession(session);
+        setLoading(false);
 
-      if (event === "SIGNED_OUT") {
-        router.push("/"); // Redirect to home on logout
+        if (session) {
+          storeSessionInLocalStorage(session);
+        }
+
+        if (event === "SIGNED_OUT") {
+          localStorage.clear(); // Clear local storage on sign out
+          router.push("/"); // Redirect to home on logout
+        }
       }
-    });
+    );
 
     return () => subscription.unsubscribe(); // Cleanup on unmount
   }, [router]);
