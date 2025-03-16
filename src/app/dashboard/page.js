@@ -10,10 +10,11 @@ import useFinancialSummaryStore from "@/store/useFinancialSummary";
 import useIncomeEchart from "@/store/useIncomeEchart";
 import useCategoryExpenses from "@/store/useCategoryExpenses";
 import { getUserData } from "@/utils";
+import useUserStore from "@/store/userStore/userStore";
 
 export default function DashboardPage() {
   const { data, isLoading, error, fetchData } = useFinancialSummaryStore();
-
+  const { getUser } = useUserStore();
   const {
     data: lineChartData,
     isLoading: isLoadingLineChart,
@@ -27,6 +28,9 @@ export default function DashboardPage() {
     fetchData: fetchPieChartData,
   } = useCategoryExpenses();
   const [summary, setSummary] = useState(null);
+  // useEffect(() => {
+  //   getUser(getUserData().email);
+  // }, []);
   useEffect(() => {
     const formatFinancialSummary = (data) => {
       return [

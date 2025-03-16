@@ -100,8 +100,10 @@ export default function DashboardLayout({ children }) {
                 ["user_email", "user_id", "access_token"].forEach((key) =>
                   localStorage.removeItem(key)
                 );
-
                 await supabase.auth.signOut();
+
+                localStorage.clear();
+                window.location.href = "/";
               }}
             >
               Signout
