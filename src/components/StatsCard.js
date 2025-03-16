@@ -40,7 +40,7 @@ export function StatsGridIcons({ data }) {
             </Text>
             <Text fw={700} fz="xl">
               {stat.value != null
-                ? Number(stat.value).toFixed(2) + ` ${currency}`
+                ? Number(stat.value).toFixed(2) + ` ${currency ? currency : ""}`
                 : "N/A"}
             </Text>
           </div>
